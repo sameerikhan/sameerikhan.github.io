@@ -1,28 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
 <style>
 ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #0;
+    background-color: #333;
 }
+
 li {
     float: left;
-    border-right:1px solid #bbb;
 }
-li:last-child {
-    border-right: none;
-}
+
 li a {
     display: block;
-    color: black;
+    color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
+
 li a:hover:not(.active) {
     background-color: #111;
 }
+
 .active {
     background-color: #4CAF50;
 }
@@ -31,7 +34,7 @@ li a:hover:not(.active) {
 <body>
 
 <ul>
-  <li><a class="active" href="index.html">Home</a></li>
+  <li><a class="active" href="index.html">Geoguesser</a></li>
   <li><a href="index2.html">Word Guessing Game</a></li>
   <li><a href="index3.html">Contact</a></li>
   <li style="float:right"><a href="index4.html">About</a></li>
