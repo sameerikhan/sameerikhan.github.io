@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>GeoGuesser</title>
+</head>
+<body>
+
+<h2>Where is this place??</h2>
+<div id="secret"></div>
+<div id="map" style="width:500px; height: 300px;"></div>
+<div id="results"></div>
+<button id="nextbutton">I'm ready to guess the next place!</button>
+
+<ol>
+
+ 
+</ol>
+<script>
+
+    var places = [
+        {lat:37.882841, lng: -121.903475},
+        {lat: 67.246928, lng: 17.417739},
+        {lat: -19.231138, lng: 17.716843},
+        {lat: -31.594483, lng: 29.523238},
+        {lat: 18.418475, lng: -71.400226}
+    ];
+    var placeNum = 0;
+    var userMarker;
+    var score = 0;
+    function onMapsAPILoad() {
+      var center = {lat: 0, lng: 0};
+      var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 1,
+          center: center
+      });
+
+      map.addListener('click', function(e) {
+        // Create or reposition marker
+        if (!userMarker) {
+          userMarker = new google.maps.Marker({
+              position: e.latLng,
+              map: map
+          });
+        } else {
+          userMarker.setMap(map);
+          userMarker.setPosition(e.latLng);
+        }
+        // Calculate distance from current secret
+        var distanceAway = getDistance(e.latLng.toJSON(), places[placeNum]);
+        // Show results 
+        if (distanceAway <= 200) {
+          score += 1
+        }
+        var resultsDiv = document.getElementById("results");
+        results.innerHTML = distanceAway + " meters away! Your score was " + score + ".";
+      });
+
+      var nextButton = document.getElementById("nextbutton");
+      nextButton.addEventListener("click", function() {
+        placeNum++;
+        if (placeNum == 5) {
+          results.innerHTML = "Congratulations you won nothing";
+        }
+        else {
+        displayNextPlace();
+        }
+      });
+
+      displayNextPlace();
+    };
+
+    function displayNextPlace() {
+      var place = places[placeNum];
+      var img = document.createElement("img");
+      img.src = "http://maps.google.com/maps/api/staticmap?" +
+          "center=" + place.lat + "," + place.lng + "&" +
+          "zoom=16&" +
+          "maptype=satellite&" +
+          "size=100x100&" +
+          "key=AIzaSyBuJk0ZN3yMa6mM8lOX9-Qhn-x1QEfa6tY&" +
+          "sensor=false";
+      var secretDiv = document.getElementById("secret");
+      secretDiv.innerHTML = "";
+      secretDiv.appendChild(img);
+    };
+
+    // Distance calculation functions, very useful!
+    var rad = function(x) {
+      return x * Math.PI / 180;
+    };
+
+    var getDistance = function(p1, p2) {
+      var R = 6378137; // Earth’s mean radius in meter
+      var dLat = rad(p2.lat - p1.lat);
+      var dLong = rad(p2.lng - p1.lng);
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c;
+      return d; // returns the distance in meter
+    };
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuJk0ZN3yMa6mM8lOX9-Qhn-x1QEfa6tY&callback=onMapsAPILoad">
+</script>
+</body>
+</html>
