@@ -18,14 +18,17 @@
 window.onload = function () {
 	var chart = new CanvasJS.Chart("chartContainer", { 
 		title: {
-			text: "Geoguesser data"
+			text: "Adding & Updating dataPoints"
 		},
 		data: [
 		{
-			type: "spline",
-			dataPoints: 
-			var lastscore = scores[scores.length-1]
-			scores.push(lastscore+score);
+			type: "line",
+			dataPoints: [
+				{ y: 10 },
+				{ y:  4 },
+				{ y: 18 },
+				{ y:   5}	
+			]
 		}
 		]
 	});
@@ -55,9 +58,5 @@ window.onload = function () {
 <div id="chartContainer" style="width:100%; height:280px"></div>  
 <button id="addDataPoint">Add Data Point</button>  
 <button id="updateDataPoint">Update Data Point</button>  
-</body>
-</html>
-<body>
-<div id="chartContainer" style="height: 300px; width: 70%;"></div>
 </body>
 </html>
