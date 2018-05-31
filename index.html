@@ -42,7 +42,7 @@
     var placeNum = 0;
     var userMarker;
     var score = 0;
-var lastscore = scores[scores.length-1]
+
     function onMapsAPILoad() {
       var center = {lat: 0, lng: 0};
       var map = new google.maps.Map(document.getElementById('map'), {
@@ -137,7 +137,10 @@ window.onload = function () {
 			type: "spline",
 			dataPoints: 
 		
-			scores.push(lastscore+score);
+							{ y: 10 },
+				{ y:  4 },
+				{ y: 18 },
+				{ y:   5}	
 		}
 		]
 	});
