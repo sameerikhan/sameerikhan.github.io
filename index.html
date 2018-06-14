@@ -1,172 +1,159 @@
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="style.css">
+
 <head>
+
+
+
+    <link rel="stylesheet" href="style.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>GeoGuesser</title>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript">
+        function drawchart () {console.log(scores)
+            var chart = new CanvasJS.Chart("chartContainer", {
+                title: {
+                    text: "Geoguesser data  "
+                },
+                data: [
+                    {
+                        type: "line",
+                        dataPoints:
+
+                            [{ y: scores[0] },  { y:  scores[1] }, { y: scores[2] }, { y: scores[3]},{ y: scores[4]},{ y: scores[5]},{ y: scores[6]},{ y: scores[7]} ]
+            }
+        ]
+        });
+            chart.render();
+        }
+    </script>
 </head>
 <body>
-    
-    
+
+
+
 <ul>
-  <li><a class="active" href="index.html">Geoguesser</a></li>
-  <li><a href="index2.html">Word Guessing Game</a></li>
-  <li><a href="index3.html">Contact</a></li>
-  <li style="float:right"><a href="index4.html">About</a></li>
-  <li><a href="index5.html">News</a></li>
-<li><a href="index6.html">Graph</a></li>
+    <li><a class="active" href="index.html">Geoguesser</a></li>
+    <li><a href="index2.html">Word Guessing Game</a></li>
+    <li><a href="index3.html">Contact</a></li>
+    <li style="float:right"><a href="index4.html">About</a></li>
+    <li><a href="index5.html">News</a></li>
+    <li><a href="index6.html">Graph</a></li>
 
 </ul>
-    
-    
+
+
 <h2>Where is this place??</h2>
 <div id="secret"></div>
 <div id="map" style="width:500px; height: 300px;"></div>
 <div id="results"></div>
-<button id="nextbutton">I'm ready to guess the next place!</button>
 
-<ol>
 
- 
-</ol>
+
+
 <script>
-
     var places = [
-        {lat:37.882841, lng: -121.903475},
-        {lat: 67.246928, lng: 17.417739},
-        {lat: -19.231138, lng: 17.716843},
-        {lat: -31.594483, lng: 29.523238},
-        {lat: 18.418475, lng: -71.400226}
+        {lat:37.870129, lng: -122.271339},
+        {lat: 37.867937, lng: -122.272242},
+        {lat: 37.762382, lng: -122.239075},
+        {lat: 37.833314, lng: -122.286017},
+        {lat: 37.823098, lng: -122.232180},
+        {lat: 38.377984, lng: -121.279332},
+        {lat: 36.085681, lng: -115.178673},
+
     ];
     var placeNum = 0;
     var userMarker;
     var score = 0;
-
+    var scores = [0];
     function onMapsAPILoad() {
-      var center = {lat: 0, lng: 0};
-      var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 1,
-          center: center
-      });
+        var center = {lat: 0, lng: 0};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 1,
+            center: center
+        });
+        map.addListener('click', function(e) {
+            // Create or reposition marker
+            if (!userMarker) {
+                userMarker = new google.maps.Marker({
+                    position: e.latLng,
+                    map: map
+                });
+            } else {
+                userMarker.setMap(map);
+                userMarker.setPosition(e.latLng);
+            }
+            // Calculate distance from current secret
+            var distanceAway = getDistance(e.latLng.toJSON(), places[placeNum]);
+            // Show results
+            if (distanceAway <= 300000) {
+                score += 1
+            }
+            scores[placeNum]=score;
+            console.log(scores[0]);
+            drawchart()
+            var resultsDiv = document.getElementById("results");
+            results.innerHTML = distanceAway + " meters away! Your score is " + score + ".";
+            placeNum++;
+            if (placeNum == 7) {
+                results.innerHTML = "Congratulations you won! your score was " + score + "." ;
+            }
+            else {
+                displayNextPlace();
+            }
+        });
 
-      map.addListener('click', function(e) {
-        // Create or reposition marker
-        if (!userMarker) {
-          userMarker = new google.maps.Marker({
-              position: e.latLng,
-              map: map
-          });
-        } else {
-          userMarker.setMap(map);
-          userMarker.setPosition(e.latLng);
-        }
-        // Calculate distance from current secret
-        var distanceAway = getDistance(e.latLng.toJSON(), places[placeNum]);
-        // Show results 
-        if (distanceAway <= 200) {
-          score += 1
-        }
-        var resultsDiv = document.getElementById("results");
-        results.innerHTML = distanceAway + " meters away! Your score was " + score + ".";
-      });
-
-      var nextButton = document.getElementById("nextbutton");
-      nextButton.addEventListener("click", function() {
-        placeNum++;
-        if (placeNum == 5) {
-          results.innerHTML = "Congratulations you won nothing";
-        }
-        else {
         displayNextPlace();
-        }
-      });
-
-      displayNextPlace();
     };
-
     function displayNextPlace() {
-      var place = places[placeNum];
-      var img = document.createElement("img");
-      img.src = "http://maps.google.com/maps/api/staticmap?" +
-          "center=" + place.lat + "," + place.lng + "&" +
-          "zoom=16&" +
-          "maptype=satellite&" +
-          "size=100x100&" +
-          "key=AIzaSyBuJk0ZN3yMa6mM8lOX9-Qhn-x1QEfa6tY&" +
-          "sensor=false";
-      var secretDiv = document.getElementById("secret");
-      secretDiv.innerHTML = "";
-      secretDiv.appendChild(img);
+        var place = places[placeNum];
+        var img = document.createElement("img");
+        img.src = "http://maps.google.com/maps/api/staticmap?" +
+            "center=" + place.lat + "," + place.lng + "&" +
+            "zoom=16&" +
+            "maptype=satellite&" +
+            "size=100x100&" +
+            "key=AIzaSyBuJk0ZN3yMa6mM8lOX9-Qhn-x1QEfa6tY&" +
+            "sensor=false";
+        var secretDiv = document.getElementById("secret");
+        secretDiv.innerHTML = "";
+        secretDiv.appendChild(img);
     };
-
     // Distance calculation functions, very useful!
     var rad = function(x) {
-      return x * Math.PI / 180;
+        return x * Math.PI / 180;
+    };
+    var getDistance = function(p1, p2) {
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.lat - p1.lat);
+        var dLong = rad(p2.lng - p1.lng);
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+            Math.sin(dLong / 2) * Math.sin(dLong / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return d; // returns the distance in meter
     };
 
-    var getDistance = function(p1, p2) {
-      var R = 6378137; // Earth’s mean radius in meter
-      var dLat = rad(p2.lat - p1.lat);
-      var dLong = rad(p2.lng - p1.lng);
-      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
-          Math.sin(dLong / 2) * Math.sin(dLong / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
-      return d; // returns the distance in meter
-    };
+
+
+
 
 </script>
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuJk0ZN3yMa6mM8lOX9-Qhn-x1QEfa6tY&callback=onMapsAPILoad">
-</script>
-</body>
-    
 
-<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script> 
-<script type="text/javascript">
-window.onload = function () {
-	var chart = new CanvasJS.Chart("chartContainer", { 
-		title: {
-			text: "Geoguesser data"
-		},
-		data: [
-		{
-			type: "spline",
-			dataPoints: 
-		
-				{ y: 10 },
-				{ y:  4 },
-				{ y: 18 },
-				{ y:   5}	
-		}
-		]
-	});
-	chart.render();	
-	$("#addDataPoint").click(function () {
-	var length = chart.options.data[0].dataPoints.length;
-	chart.options.title.text = "New DataPoint Added at the end";
-	chart.options.data[0].dataPoints.push({ y: 25 - Math.random() * 10});
-	chart.render();
-	});
-	$("#updateDataPoint").click(function () {
-	var length = chart.options.data[0].dataPoints.length;
-	chart.options.title.text = "Last DataPoint Updated";
-	chart.options.data[0].dataPoints[length-1].y = 15 - Math.random() * 10;
-	chart.render();
-	});
-}
+
 </script>
 
-<body>  
-<div id="chartContainer" style="width:100%; height:280px"></div>  
-<button id="addDataPoint">Add Data Point</button>  
-<button id="updateDataPoint">Update Data Point</button>  
-</body>
-</html>
-<body>
-<div id="chartContainer" style="height: 300px; width: 70%;"></div>
+
+
+
+
+
+<div id="chartContainer" style="width:100%; height:280px"></div>
+
 </body>
 </html>
